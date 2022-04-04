@@ -91,13 +91,12 @@ class Ssh(object):
             except (paramiko.ssh_exception.SSHException, ValueError):
                 key_fileobj.seek(0)
                 continue
-        else:
-            raise SchemaError(
-                _(
-                    'Unrecognized or unsupported SSH key algorithm, '
-                    'only RSA and ED25519 are currently supported.'
-                )
+        raise SchemaError(
+            _(
+                'Unrecognized or unsupported SSH key algorithm, '
+                'only RSA and ED25519 are currently supported.'
             )
+        )
 
     def connect(self):
         success = False
@@ -171,7 +170,7 @@ class Ssh(object):
         if exit_status not in exit_codes and raise_unexpected_exit:
             log_message = 'Unexpected exit code: {0}'.format(exit_status)
             logger.info(log_message)
-            message = error if error else output
+            message = error or output
             # if message is empty, use log_message
             raise CommandFailedException(message or log_message)
         return output, exit_status

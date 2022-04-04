@@ -4,7 +4,7 @@ import sys
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEBUG = True
 TESTING = sys.argv[1:2] == ['test']
-SELENIUM_HEADLESS = True if os.environ.get('SELENIUM_HEADLESS', False) else False
+SELENIUM_HEADLESS = bool(os.environ.get('SELENIUM_HEADLESS', False))
 SHELL = 'shell' in sys.argv or 'shell_plus' in sys.argv
 
 ALLOWED_HOSTS = ['*']
@@ -91,15 +91,16 @@ INTERNAL_IPS = ['127.0.0.1']
 ROOT_URLCONF = 'openwisp2.urls'
 
 ASGI_APPLICATION = 'openwisp2.asgi.application'
-if not TESTING:
-    CHANNEL_LAYERS = {
+CHANNEL_LAYERS = (
+    {'default': {'BACKEND': 'channels.layers.InMemoryChannelLayer'}}
+    if TESTING
+    else {
         'default': {
             'BACKEND': 'channels_redis.core.RedisChannelLayer',
             'CONFIG': {'hosts': ['redis://localhost/7']},
         }
     }
-else:
-    CHANNEL_LAYERS = {'default': {'BACKEND': 'channels.layers.InMemoryChannelLayer'}}
+)
 
 TIME_ZONE = 'Europe/Rome'
 LANGUAGE_CODE = 'en-gb'
@@ -166,7 +167,6 @@ if not TESTING:
         }
     }
 
-if not TESTING:
     CELERY_BROKER_URL = os.getenv('REDIS_URL', 'redis://localhost/1')
 else:
     CELERY_TASK_ALWAYS_EAGER = True
@@ -186,17 +186,14 @@ LOGGING = {
 }
 
 if not TESTING and SHELL:
-    LOGGING.update(
-        {
-            'loggers': {
-                'django.db.backends': {
-                    'level': 'DEBUG',
-                    'handlers': ['console'],
-                    'propagate': False,
-                },
-            }
-        }
-    )
+    LOGGING['loggers'] = {
+        'django.db.backends': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+    }
+
 
 DJANGO_LOCI_GEOCODE_STRICT_TEST = False
 OPENWISP_CONTROLLER_CONTEXT = {'vpnserver1': 'vpn.testdomain.com'}
@@ -270,12 +267,6 @@ if os.environ.get('SAMPLE_APP', False):
     SUBNET_DIVISION_SUBNETDIVISIONINDEX_MODEL = (
         'sample_subnet_division.SubnetDivisionIndex'
     )
-else:
-    # not needed, these are the default values, left here only for example purposes
-    # DJANGO_X509_CA_MODEL = 'pki.Ca'
-    # DJANGO_X509_CERT_MODEL = 'pki.Cert'
-    pass
-
 if os.environ.get('SAMPLE_APP', False) and TESTING:
     # Required for openwisp-users tests
     OPENWISP_ORGANIZATION_USER_ADMIN = True

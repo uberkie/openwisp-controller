@@ -20,9 +20,10 @@ if __name__ == '__main__':
         args.insert(2, 'openwisp2')
     execute_from_command_line(args)
 
-    if not os.environ.get('SAMPLE_APP', False):
-        app_dir = 'openwisp_controller/'
-    else:
-        app_dir = 'tests/openwisp2/'
+    app_dir = (
+        'tests/openwisp2/'
+        if os.environ.get('SAMPLE_APP', False)
+        else 'openwisp_controller/'
+    )
 
     sys.exit(pytest.main([app_dir]))

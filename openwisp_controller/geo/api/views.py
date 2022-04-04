@@ -55,8 +55,7 @@ class DeviceLocationView(ProtectedAPIMixin, generics.RetrieveUpdateAPIView):
 
     def get_object(self, *args, **kwargs):
         device = super().get_object()
-        location = self.get_location(device)
-        if location:
+        if location := self.get_location(device):
             return location
         # if no location present, automatically create it
         return self.create_location(device)
@@ -106,13 +105,11 @@ class LocationDeviceList(
     queryset = Device.objects.none()
 
     def get_parent_queryset(self):
-        qs = Location.objects.filter(pk=self.kwargs['pk'])
-        return qs
+        return Location.objects.filter(pk=self.kwargs['pk'])
 
     def get_queryset(self):
         super().get_queryset()
-        qs = Device.objects.filter(devicelocation__location_id=self.kwargs['pk'])
-        return qs
+        return Device.objects.filter(devicelocation__location_id=self.kwargs['pk'])
 
 
 device_location = DeviceLocationView.as_view()

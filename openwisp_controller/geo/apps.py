@@ -38,12 +38,7 @@ class GeoConfig(LociConfig):
         from .tests.test_admin_inline import TestAdminInline
 
         params = TestAdminInline._get_params()
-        delete_keys = []
-        # delete unnecessary fields
-        # leave only management fields
-        for key in params.keys():
-            if '_FORMS' not in key:
-                delete_keys.append(key)
+        delete_keys = [key for key in params.keys() if '_FORMS' not in key]
         for key in delete_keys:
             del params[key]
         TestConfigAdmin._additional_params.update(params)

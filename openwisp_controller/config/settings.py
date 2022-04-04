@@ -64,7 +64,7 @@ HARDWARE_ID_OPTIONS = {
     'verbose_name': _('Serial number'),
     'help_text': _('Serial number of this device'),
 }
-HARDWARE_ID_OPTIONS.update(get_settings_value('HARDWARE_ID_OPTIONS', {}))
+HARDWARE_ID_OPTIONS |= get_settings_value('HARDWARE_ID_OPTIONS', {})
 HARDWARE_ID_AS_NAME = get_settings_value('HARDWARE_ID_AS_NAME', True)
 DEVICE_VERBOSE_NAME = get_settings_value(
     'DEVICE_VERBOSE_NAME', (_('Device'), _('Devices'))

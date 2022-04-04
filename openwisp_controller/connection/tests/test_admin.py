@@ -43,7 +43,7 @@ class TestConnectionAdmin(TestAdminMixin, CreateConnectionsMixin, TestCase):
         dc1 = self._create_device_connection(credentials=cred1)
         dc2 = self._create_device_connection(credentials=cred2)
         dc3 = self._create_device_connection(credentials=cred3)
-        data = dict(
+        return dict(
             cred1=cred1,
             cred2=cred2,
             cred3_inactive=cred3,
@@ -56,7 +56,6 @@ class TestConnectionAdmin(TestAdminMixin, CreateConnectionsMixin, TestCase):
             operator=operator,
             administrator=administrator,
         )
-        return data
 
     def test_credentials_queryset(self):
         data = self._create_multitenancy_test_env()
@@ -94,8 +93,8 @@ class TestConnectionAdmin(TestAdminMixin, CreateConnectionsMixin, TestCase):
         data = self._create_multitenancy_test_env()
         self._test_multitenant_admin(
             url=reverse(f'admin:{self.config_app_label}_device_add'),
-            visible=[str(data['cred1'].name) + str(' (SSH)')],
-            hidden=[str(data['cred2'].name) + str(' (SSH)'), data['cred3_inactive']],
+            visible=[str(data['cred1'].name) + ' (SSH)'],
+            hidden=[str(data['cred2'].name) + ' (SSH)', data['cred3_inactive']],
             select_widget=True,
         )
 

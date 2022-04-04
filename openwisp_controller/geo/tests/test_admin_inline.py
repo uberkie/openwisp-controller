@@ -17,10 +17,7 @@ DeviceLocation = load_model('geo', 'DeviceLocation')
 # ConfigInline management fields
 _device_params = TestConfigAdmin._device_params.copy()
 _device_params['config-TOTAL_FORMS'] = 0
-_delete_keys = []
-for key in _device_params.keys():
-    if 'config-0-' in key:
-        _delete_keys.append(key)
+_delete_keys = [key for key in _device_params.keys() if 'config-0-' in key]
 for key in _delete_keys:
     del _device_params[key]
 

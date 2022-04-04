@@ -44,14 +44,13 @@ class TestAdmin(TestPkiMixin, TestAdminMixin, TestOrganizationMixin, TestCase):
             cert_inactive = self._create_cert(
                 name='cert-inactive', ca=ca_inactive, organization=inactive
             )
-            data.update(
-                dict(
-                    cert1=cert1,
-                    cert_shared=cert_shared,
-                    cert2=cert2,
-                    cert_inactive=cert_inactive,
-                )
+            data |= dict(
+                cert1=cert1,
+                cert_shared=cert_shared,
+                cert2=cert2,
+                cert_inactive=cert_inactive,
             )
+
         return data
 
     def test_ca_queryset(self):

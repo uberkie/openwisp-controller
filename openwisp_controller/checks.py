@@ -36,7 +36,10 @@ def check_openwisp_controller_ctx_processor(app_config, **kwargs):
     if not app_settings.OPENWISP_CONTROLLER_API_HOST:
         return errors
 
-    if not (ctx_processor in settings.TEMPLATES[0]['OPTIONS']['context_processors']):
+    if (
+        ctx_processor
+        not in settings.TEMPLATES[0]['OPTIONS']['context_processors']
+    ):
         errors.append(
             checks.Warning(
                 msg='Improperly Configured',

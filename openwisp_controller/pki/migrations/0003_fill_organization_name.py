@@ -10,7 +10,7 @@ def forward(apps, schema_editor):
         * ``openwisp_controller.pki.Ca``
         * ``openwisp_controller.pki.Cert``
     """
-    if not schema_editor.connection.alias == 'default':
+    if schema_editor.connection.alias != 'default':
         return
     ca_model = apps.get_model('pki', 'Ca')
     cert_model = apps.get_model('pki', 'Cert')

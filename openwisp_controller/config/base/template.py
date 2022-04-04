@@ -210,10 +210,10 @@ class AbstractTemplate(ShareableOrgMixinUniqueName, BaseConfig):
         return clone
 
     def __get_clone_name(self):
-        name = '{} (Clone)'.format(self.name)
+        name = f'{self.name} (Clone)'
         index = 2
         while self.__class__.objects.filter(name=name).count():
-            name = '{} (Clone {})'.format(self.name, index)
+            name = f'{self.name} (Clone {index})'
             index += 1
         return name
 
@@ -228,6 +228,8 @@ def _get_value_for_comparison(value):
     if value is a nested OrderedDict, convert it to dict
     so two simple dicts can be compared
     """
-    if not isinstance(value, OrderedDict):
-        return value
-    return json.loads(json.dumps(value))
+    return (
+        json.loads(json.dumps(value))
+        if isinstance(value, OrderedDict)
+        else value
+    )

@@ -165,8 +165,8 @@ class TestMultitenantApi(
         self._create_admin(is_superuser=True)
 
     def _create_device_location(self, **kwargs):
-        options = dict()
-        options.update(kwargs)
+        options = {}
+        options |= kwargs
         device_location = self.object_location_model(**options)
         device_location.full_clean()
         device_location.save()

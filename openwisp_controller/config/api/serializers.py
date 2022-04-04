@@ -95,14 +95,14 @@ class VpnSerializer(BaseSerializer):
 class FilterTemplatesByOrganization(serializers.PrimaryKeyRelatedField):
     def get_queryset(self):
         user = self.context['request'].user
-        if user.is_superuser:
-            queryset = Template.objects.all()
-        else:
-            queryset = Template.objects.filter(
+        return (
+            Template.objects.all()
+            if user.is_superuser
+            else Template.objects.filter(
                 Q(organization__in=user.organizations_managed)
                 | Q(organization__isnull=True)
             )
-        return queryset
+        )
 
 
 class BaseConfigSerializer(serializers.ModelSerializer):
@@ -230,28 +230,24 @@ class DeviceDetailSerializer(BaseSerializer):
                     new_config_templates = [
                         template.pk for template in config_data.get('templates')
                     ]
-                    old_config_templates = [
-                        template
-                        for template in instance.config.templates.values_list(
-                            'pk', flat=True
-                        )
-                    ]
+                    old_config_templates = list(
+                        instance.config.templates.values_list('pk', flat=True)
+                    )
+
                     if new_config_templates != old_config_templates:
                         with transaction.atomic():
-                            vpn_list = instance.config.templates.filter(
+                            if vpn_list := instance.config.templates.filter(
                                 type='vpn'
-                            ).values_list('vpn')
-                            if vpn_list:
+                            ).values_list('vpn'):
                                 instance.config.vpnclient_set.exclude(
                                     vpn__in=vpn_list
                                 ).delete()
                             instance.config.templates.clear()
                             instance.config.templates.add(*new_config_templates)
                 else:
-                    vpn_list = instance.config.templates.filter(type='vpn').values_list(
-                        'vpn'
-                    )
-                    if vpn_list:
+                    if vpn_list := instance.config.templates.filter(
+                        type='vpn'
+                    ).values_list('vpn'):
                         instance.config.vpnclient_set.exclude(vpn__in=vpn_list).delete()
                     instance.config.templates.clear()
                     instance.config.templates.add(*[])

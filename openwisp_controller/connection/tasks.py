@@ -33,8 +33,7 @@ def update_config(device_id):
         logger.warning(f'update_config("{device_id}") failed: {e}')
         return
     qs = device.deviceconnection_set.filter(device_id=device_id, enabled=True)
-    conn = qs.first()
-    if conn:
+    if conn := qs.first():
         logger.info(f'Updating {device} (pk: {device_id})')
         conn.update_config()
 

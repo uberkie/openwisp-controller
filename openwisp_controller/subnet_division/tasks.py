@@ -31,10 +31,7 @@ def update_subnet_division_index(rule_id):
 
     for index in division_rule.subnetdivisionindex_set.only('keyword').iterator():
         identifiers = index.keyword.split('_')
-        if index.ip_id is not None:
-            required_identifiers = 2
-        else:
-            required_identifiers = 1
+        required_identifiers = 2 if index.ip_id is not None else 1
         index.keyword = '_'.join(
             [division_rule.label] + identifiers[-required_identifiers:]
         )

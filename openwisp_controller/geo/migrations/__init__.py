@@ -19,8 +19,6 @@ def assign_permissions_to_groups(apps, schema_editor):
 
     for model_name in operators_and_admins_can_change:
         for operation in manage_operations:
-            permission = Permission.objects.get(
-                codename='{}_{}'.format(operation, model_name)
-            )
+            permission = Permission.objects.get(codename=f'{operation}_{model_name}')
             admin.permissions.add(permission.pk)
             operator.permissions.add(permission.pk)

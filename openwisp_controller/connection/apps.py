@@ -114,10 +114,10 @@ class ConnectionConfig(AppConfig):
             return
         device = instance.device
         notification_opts = dict(sender=instance, target=device)
-        if not is_working:
-            notification_opts['type'] = 'connection_is_not_working'
-        else:
-            notification_opts['type'] = 'connection_is_working'
+        notification_opts['type'] = (
+            'connection_is_working' if is_working else 'connection_is_not_working'
+        )
+
         notify.send(**notification_opts)
 
     def register_notification_types(self):

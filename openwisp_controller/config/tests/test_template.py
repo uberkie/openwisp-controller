@@ -172,7 +172,7 @@ class TestTemplate(
     def test_get_context(self):
         t = self._create_template()
         expected = {}
-        expected.update(app_settings.CONTEXT)
+        expected |= app_settings.CONTEXT
         self.assertEqual(t.get_context(), expected)
 
     def test_tamplates_clone(self):
@@ -185,7 +185,7 @@ class TestTemplate(
         c = t.clone(user)
         c.full_clean()
         c.save()
-        self.assertEqual(c.name, '{} (Clone)'.format(t.name))
+        self.assertEqual(c.name, f'{t.name} (Clone)')
         self.assertIsNotNone(c.pk)
         self.assertNotEqual(c.pk, t.pk)
         self.assertFalse(c.default)

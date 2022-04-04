@@ -33,9 +33,7 @@ class TestCommandsAPI(TestCase, AuthenticationMixin, CreateCommandMixin):
         path = reverse(f'{self.url_namespace}:{url_name}', args=args)
         if not kwargs:
             return path
-        query_params = []
-        for key, value in kwargs.items():
-            query_params.append(f'{key}={value}')
+        query_params = [f'{key}={value}' for key, value in kwargs.items()]
         query_string = '&'.join(query_params)
         return f'{path}?{query_string}'
 

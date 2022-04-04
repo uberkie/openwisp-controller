@@ -28,8 +28,9 @@ class BaseTestNotification:
     ):
         n = Notification.objects.first()
         config_app = (
-            'config' if not os.environ.get('SAMPLE_APP', False) else 'sample_config'
+            'sample_config' if os.environ.get('SAMPLE_APP', False) else 'config'
         )
+
         device_url_path = reverse(f'admin:{config_app}_device_change', args=[self.d.id])
         exp_target_link = f'https://example.com{device_url_path}'
 

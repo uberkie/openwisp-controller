@@ -98,9 +98,7 @@ class AbstractConfig(BaseConfig):
         self._send_config_status_changed = False
 
     def __str__(self):
-        if self._has_device():
-            return self.name
-        return str(self.pk)
+        return self.name if self._has_device() else str(self.pk)
 
     @property
     def name(self):
@@ -108,9 +106,7 @@ class AbstractConfig(BaseConfig):
         returns device name
         (kept for backward compatibility with pre 0.6 versions)
         """
-        if self._has_device():
-            return self.device.name
-        return str(self.pk)
+        return self.device.name if self._has_device() else str(self.pk)
 
     @property
     def mac_address(self):
@@ -153,11 +149,9 @@ class AbstractConfig(BaseConfig):
         # coming from signal
         if isinstance(pk_set, set):
             template_model = cls.get_template_model()
-            templates = template_model.objects.filter(pk__in=list(pk_set))
-        # coming from admin ModelForm
+            return template_model.objects.filter(pk__in=list(pk_set))
         else:
-            templates = pk_set
-        return templates
+            return pk_set
 
     @classmethod
     def clean_templates(cls, action, instance, pk_set, **kwargs):
@@ -379,8 +373,7 @@ class AbstractConfig(BaseConfig):
         result = super().save(*args, **kwargs)
         # add default templates if config has just been created
         if created:
-            default_templates = self.get_default_templates()
-            if default_templates:
+            if default_templates := self.get_default_templates():
                 self.templates.add(*default_templates)
         # emit signals if config is modified and/or if status is changing
         if not created and self._send_config_modified_after_save:
@@ -461,10 +454,7 @@ class AbstractConfig(BaseConfig):
             vpn_id = vpn.pk.hex
             context.update(vpn.get_vpn_server_context())
             vpn_context_keys = vpn._get_auto_context_keys()
-            cert = vpnclient.cert
-            # conditional needed for VPN without x509 authentication
-            # eg: simple password authentication
-            if cert:
+            if cert := vpnclient.cert:
                 # cert
                 cert_filename = 'client-{0}.pem'.format(vpn_id)
                 cert_path = '{0}/{1}'.format(app_settings.CERT_PATH, cert_filename)
@@ -484,9 +474,8 @@ class AbstractConfig(BaseConfig):
                 context['public_key'] = vpnclient.public_key
             if vpnclient.private_key:
                 context['private_key'] = vpnclient.private_key
-            if vpn.subnet:
-                if vpnclient.ip:
-                    context[vpn_context_keys['ip_address']] = vpnclient.ip.ip_address
+            if vpn.subnet and vpnclient.ip:
+                context[vpn_context_keys['ip_address']] = vpnclient.ip.ip_address
             if 'vni' in vpn_context_keys and vpnclient.vni:
                 context[vpn_context_keys['vni']] = f'{vpnclient.vni}'
         return context
@@ -507,12 +496,12 @@ class AbstractConfig(BaseConfig):
                 ]
             )
             if self.context and not system:
-                extra.update(self.context)
+                extra |= self.context
         extra.update(self.get_vpn_context())
         for func in self._config_context_functions:
-            extra.update(func(config=self))
+            extra |= func(config=self)
         if app_settings.HARDWARE_ID_ENABLED and self._has_device():
-            extra.update({'hardware_id': str(self.device.hardware_id)})
+            extra['hardware_id'] = str(self.device.hardware_id)
         c.update(sorted(extra.items()))
         return c
 

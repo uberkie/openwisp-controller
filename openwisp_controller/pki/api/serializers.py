@@ -110,7 +110,7 @@ class CaRenewSerializer(CaDetailSerializer):
 
 
 def get_import_data(instance):
-    data = {
+    return {
         'name': instance.name,
         'organization': instance.organization,
         'key_length': instance.key_length,
@@ -130,7 +130,6 @@ def get_import_data(instance):
         'private_key': instance.private_key,
         'passphrase': instance.passphrase,
     }
-    return data
 
 
 def get_cert_list_fields(fields):

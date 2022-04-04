@@ -66,10 +66,7 @@ class SubnetAdmin(BaseSubnetAdmin):
             .select_related('config__device')
             .values_list('subnet_id', 'config__device__name')
         )
-        self._lookup = {}
-        for subnet_id, device_name in subnet_division_index_qs:
-            self._lookup[subnet_id] = device_name
-
+        self._lookup = dict(subnet_division_index_qs)
         if app_settings.HIDE_GENERATED_SUBNETS:
             qs = qs.exclude(
                 id__in=SubnetDivisionIndex.objects.filter(

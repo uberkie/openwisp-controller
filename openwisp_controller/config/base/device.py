@@ -153,24 +153,23 @@ class AbstractDevice(OrgMixin, BaseModel):
                 if app_settings.HARDWARE_ID_ENABLED
                 else self.mac_address
             )
-            hash_key = md5('{}+{}'.format(keybase, shared_secret).encode('utf-8'))
+            hash_key = md5(f'{keybase}+{shared_secret}'.encode('utf-8'))
             return hash_key.hexdigest()
         else:
             return KeyField.default_callable()
 
     def _validate_unique_name(self):
-        if app_settings.DEVICE_NAME_UNIQUE:
-            if (
-                hasattr(self, 'organization')
-                and self._meta.model.objects.filter(
-                    ~Q(id=self.id),
-                    organization=self.organization,
-                    name__iexact=self.name,
-                ).exists()
-            ):
-                raise ValidationError(
-                    _('Device with this Name and Organization already exists.')
-                )
+        if app_settings.DEVICE_NAME_UNIQUE and (
+            hasattr(self, 'organization')
+            and self._meta.model.objects.filter(
+                ~Q(id=self.id),
+                organization=self.organization,
+                name__iexact=self.name,
+            ).exists()
+        ):
+            raise ValidationError(
+                _('Device with this Name and Organization already exists.')
+            )
 
     def clean(self, *args, **kwargs):
         super().clean(*args, **kwargs)
@@ -209,12 +208,13 @@ class AbstractDevice(OrgMixin, BaseModel):
         # be overwritten fetching values from database
         # NOTE: Initial value of a field will only remain deferred
         # if the current value of the field is still deferred. This
-        present_values = dict()
-        for field in self._changed_checked_fields:
-            if getattr(
-                self, f'_initial_{field}'
-            ) == models.DEFERRED and not self._is_deferred(field):
-                present_values[field] = getattr(self, field)
+        present_values = {
+            field: getattr(self, field)
+            for field in self._changed_checked_fields
+            if getattr(self, f'_initial_{field}') == models.DEFERRED
+            and not self._is_deferred(field)
+        }
+
         # Skip fetching values from database if all of the checked fields are
         # still deferred, or were not deferred from the begining.
         if not present_values:
@@ -283,10 +283,7 @@ class AbstractDevice(OrgMixin, BaseModel):
         calls `get_default_templates` of related
         config object (or new config instance)
         """
-        if self._has_config():
-            config = self.config
-        else:
-            config = self.get_temp_config_instance()
+        config = self.config if self._has_config() else self.get_temp_config_instance()
         return config.get_default_templates()
 
     @classmethod

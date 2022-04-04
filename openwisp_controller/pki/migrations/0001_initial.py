@@ -13,6 +13,8 @@ from django.db import migrations, models
 from swapper import dependency, get_model_name, split
 
 
+
+
 class Migration(migrations.Migration):
 
     initial = True
@@ -91,17 +93,23 @@ class Migration(migrations.Migration):
                 (
                     'state',
                     models.CharField(
-                        blank=True, max_length=64, verbose_name='state or province'
+                        blank=True,
+                        max_length=64,
+                        verbose_name='state or province',
                     ),
                 ),
                 (
                     'city',
-                    models.CharField(blank=True, max_length=64, verbose_name='city'),
+                    models.CharField(
+                        blank=True, max_length=64, verbose_name='city'
+                    ),
                 ),
                 (
                     'email',
                     models.EmailField(
-                        blank=True, max_length=254, verbose_name='email address'
+                        blank=True,
+                        max_length=254,
+                        verbose_name='email address',
                     ),
                 ),
                 (
@@ -117,7 +125,9 @@ class Migration(migrations.Migration):
                         default=list,
                         dump_kwargs={'indent': 4},
                         help_text='additional x509 certificate extensions',
-                        load_kwargs={'object_pairs_hook': collections.OrderedDict},
+                        load_kwargs={
+                            'object_pairs_hook': collections.OrderedDict
+                        },
                         verbose_name='extensions',
                     ),
                 ),
@@ -244,17 +254,23 @@ class Migration(migrations.Migration):
                 (
                     'state',
                     models.CharField(
-                        blank=True, max_length=64, verbose_name='state or province'
+                        blank=True,
+                        max_length=64,
+                        verbose_name='state or province',
                     ),
                 ),
                 (
                     'city',
-                    models.CharField(blank=True, max_length=64, verbose_name='city'),
+                    models.CharField(
+                        blank=True, max_length=64, verbose_name='city'
+                    ),
                 ),
                 (
                     'email',
                     models.EmailField(
-                        blank=True, max_length=254, verbose_name='email address'
+                        blank=True,
+                        max_length=254,
+                        verbose_name='email address',
                     ),
                 ),
                 (
@@ -270,7 +286,9 @@ class Migration(migrations.Migration):
                         default=list,
                         dump_kwargs={'indent': 4},
                         help_text='additional x509 certificate extensions',
-                        load_kwargs={'object_pairs_hook': collections.OrderedDict},
+                        load_kwargs={
+                            'object_pairs_hook': collections.OrderedDict
+                        },
                         verbose_name='extensions',
                     ),
                 ),
@@ -311,11 +329,17 @@ class Migration(migrations.Migration):
                         verbose_name='modified',
                     ),
                 ),
-                ('revoked', models.BooleanField(default=False, verbose_name='revoked')),
+                (
+                    'revoked',
+                    models.BooleanField(default=False, verbose_name='revoked'),
+                ),
                 (
                     'revoked_at',
                     models.DateTimeField(
-                        blank=True, default=None, null=True, verbose_name='revoked at'
+                        blank=True,
+                        default=None,
+                        null=True,
+                        verbose_name='revoked at',
                     ),
                 ),
                 (
@@ -344,6 +368,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.AlterUniqueTogether(
-            name='cert', unique_together=set([('ca', 'serial_number')])
+            name='cert', unique_together={('ca', 'serial_number')}
         ),
     ]

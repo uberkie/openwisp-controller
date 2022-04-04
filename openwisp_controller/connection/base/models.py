@@ -195,9 +195,11 @@ class AbstractCredentials(ConnectorMixin, ShareableOrgMixinUniqueName, BaseModel
             content_type=ContentType.objects.get_for_model(DeviceConnection),
             serialized_data__contains=str(device.id),
         )
-        versioned_credentials = []
-        for version in device_connection_versions:
-            versioned_credentials.append(version.field_dict['credentials_id'])
+        versioned_credentials = [
+            version.field_dict['credentials_id']
+            for version in device_connection_versions
+        ]
+
         not_where |= models.Q(id__in=versioned_credentials)
         credentials = cls.objects.filter(where).exclude(not_where)
         for cred in credentials:
@@ -260,7 +262,18 @@ class AbstractDeviceConnection(ConnectorMixin, TimeStampedEditableModel):
                     )
                 }
             )
-        if not self.update_strategy and self.device._has_config():
+        if not self.update_strategy:
+            if not self.device._has_config():
+                raise ValidationError(
+                    {
+                        'update_strategy': _(
+                            'the update strategy can be determined automatically '
+                            'only if the device has a configuration specified, '
+                            'because it is inferred from the configuration backend. '
+                            'Please select the update strategy manually.'
+                        )
+                    }
+                )
             try:
                 self.update_strategy = app_settings.CONFIG_UPDATE_MAPPING[
                     self.device.config.backend
@@ -274,17 +287,6 @@ class AbstractDeviceConnection(ConnectorMixin, TimeStampedEditableModel):
                         )
                     }
                 )
-        elif not self.update_strategy:
-            raise ValidationError(
-                {
-                    'update_strategy': _(
-                        'the update strategy can be determined automatically '
-                        'only if the device has a configuration specified, '
-                        'because it is inferred from the configuration backend. '
-                        'Please select the update strategy manually.'
-                    )
-                }
-            )
         self._validate_connector_schema()
 
     def get_addresses(self):
@@ -539,10 +541,7 @@ class AbstractCommand(TimeStampedEditableModel):
 
     @property
     def input_data(self):
-        if self.is_custom:
-            return self.custom_command
-        else:
-            return ', '.join(self.arguments)
+        return self.custom_command if self.is_custom else ', '.join(self.arguments)
 
     @property
     def _schema(self):

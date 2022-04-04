@@ -5,7 +5,7 @@ def forward(apps, schema_editor):
     """
     Updates default value of context field
     """
-    if not schema_editor.connection.alias == 'default':
+    if schema_editor.connection.alias != 'default':
         return
     Config = apps.get_model('config', 'Config')
 
