@@ -131,12 +131,9 @@ class DeviceChecksumView(UpdateLastIpMixin, GetDeviceView):
 
     def get(self, request, pk):
         device = self.get_device()
-        bad_request = forbid_unallowed(request, 'GET', 'key', device.key)
-        if bad_request:
+        if bad_request := forbid_unallowed(request, 'GET', 'key', device.key):
             return bad_request
-        updated = self.update_last_ip(device, request)
-        # updates cache if ip addresses changed
-        if updated:
+        if updated := self.update_last_ip(device, request):
             self.update_device_cache(device)
         checksum_requested.send(
             sender=device.__class__, instance=device, request=request
@@ -182,8 +179,7 @@ class DeviceDownloadConfigView(GetDeviceView):
 
     def get(self, request, *args, **kwargs):
         device = self.get_object(*args, **kwargs)
-        bad_request = forbid_unallowed(request, 'GET', 'key', device.key)
-        if bad_request:
+        if bad_request := forbid_unallowed(request, 'GET', 'key', device.key):
             return bad_request
         config_download_requested.send(
             sender=device.__class__, instance=device, request=request
@@ -200,15 +196,12 @@ class DeviceUpdateInfoView(CsrfExtemptMixin, GetDeviceView):
 
     def post(self, request, *args, **kwargs):
         device = self.get_object(*args, **kwargs)
-        bad_request = forbid_unallowed(request, 'POST', 'key', device.key)
-        if bad_request:
+        if bad_request := forbid_unallowed(request, 'POST', 'key', device.key):
             return bad_request
         # update device information
         for attr in self.UPDATABLE_FIELDS:
             if attr in request.POST:
-                # ignore empty values
-                value = request.POST.get(attr).strip()
-                if value:
+                if value := request.POST.get(attr).strip():
                     setattr(device, attr, value)
         # validate and save everything or fail otherwise
         try:
@@ -238,8 +231,7 @@ class DeviceReportStatusView(CsrfExtemptMixin, GetDeviceView):
         allowed_status.append('running')  # backward compatibility
         required_params = [('key', device.key), ('status', allowed_status)]
         for key, value in required_params:
-            bad_response = forbid_unallowed(request, 'POST', key, value)
-            if bad_response:
+            if bad_response := forbid_unallowed(request, 'POST', key, value):
                 return bad_response
         status = request.POST.get('status')
         # mantain backward compatibility with old agents
@@ -310,8 +302,11 @@ class DeviceRegisterView(UpdateLastIpMixin, CsrfExtemptMixin, View):
         # retrieve tags and add them to current config
         tags = tags.split()
         queryset = self.get_template_queryset(config)
-        tagged_templates = queryset.filter(tags__name__in=tags).only('id').distinct()
-        if tagged_templates:
+        if (
+            tagged_templates := queryset.filter(tags__name__in=tags)
+            .only('id')
+            .distinct()
+        ):
             config.templates.add(*tagged_templates)
 
     def invalid(self, request):
@@ -327,8 +322,7 @@ class DeviceRegisterView(UpdateLastIpMixin, CsrfExtemptMixin, View):
         ]
         # valid required params or forbid
         for key, value in required_params:
-            invalid_response = forbid_unallowed(request, 'POST', key, value)
-            if invalid_response:
+            if invalid_response := forbid_unallowed(request, 'POST', key, value):
                 return invalid_response
 
     def forbidden(self, request):
@@ -356,18 +350,11 @@ class DeviceRegisterView(UpdateLastIpMixin, CsrfExtemptMixin, View):
         """
         if not app_settings.REGISTRATION_ENABLED:
             return ControllerResponse('error: registration disabled', status=403)
-        # ensure request is valid
-        bad_response = self.invalid(request)
-        if bad_response:
+        if bad_response := self.invalid(request):
             return bad_response
-        # ensure request is allowed
-        forbidden = self.forbidden(request)
-        if forbidden:
+        if forbidden := self.forbidden(request):
             return forbidden
-        # prepare model attributes
-        key = None
-        if app_settings.CONSISTENT_REGISTRATION:
-            key = request.POST.get('key')
+        key = request.POST.get('key') if app_settings.CONSISTENT_REGISTRATION else None
         # try retrieving existing Device first
         # (key is not None only if CONSISTENT_REGISTRATION is enabled)
         new = False
@@ -451,8 +438,7 @@ class VpnChecksumView(GetVpnView):
 
     def get(self, request, *args, **kwargs):
         vpn = self.get_object(*args, **kwargs)
-        bad_request = forbid_unallowed(request, 'GET', 'key', vpn.key)
-        if bad_request:
+        if bad_request := forbid_unallowed(request, 'GET', 'key', vpn.key):
             return bad_request
         checksum_requested.send(sender=vpn.__class__, instance=vpn, request=request)
         return ControllerResponse(vpn.checksum, content_type='text/plain')
@@ -465,8 +451,7 @@ class VpnDownloadConfigView(GetVpnView):
 
     def get(self, request, *args, **kwargs):
         vpn = self.get_object(*args, **kwargs)
-        bad_request = forbid_unallowed(request, 'GET', 'key', vpn.key)
-        if bad_request:
+        if bad_request := forbid_unallowed(request, 'GET', 'key', vpn.key):
             return bad_request
         config_download_requested.send(
             sender=vpn.__class__, instance=vpn, request=request

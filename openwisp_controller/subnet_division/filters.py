@@ -57,5 +57,4 @@ class SubnetListFilter(admin.RelatedFieldListFilter):
                     )
                 },
             )
-        choices = super().field_choices(field, request, model_admin)
-        return choices
+        return super().field_choices(field, request, model_admin)

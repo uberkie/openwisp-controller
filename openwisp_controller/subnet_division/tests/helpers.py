@@ -25,9 +25,9 @@ class SubnetDivisionTestMixin(
         return Subnet.objects.exclude(name__contains='Reserved')
 
     def _create_subnet_division_rule(self, **kwargs):
-        options = dict()
-        options.update(self._get_extra_fields(**kwargs))
-        options.update(kwargs)
+        options = {}
+        options |= self._get_extra_fields(**kwargs)
+        options |= kwargs
         instance = SubnetDivisionRule(**options)
         instance.full_clean()
         instance.save()

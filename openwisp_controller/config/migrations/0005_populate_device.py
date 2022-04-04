@@ -7,7 +7,7 @@ def forward(apps, schema_editor):
     Creates a Device record for each existing Config
     TODO: delete this migration in future releases
     """
-    if not schema_editor.connection.alias == 'default':
+    if schema_editor.connection.alias != 'default':
         return
     Device = apps.get_model('config', 'Device')
     Config = apps.get_model('config', 'Config')

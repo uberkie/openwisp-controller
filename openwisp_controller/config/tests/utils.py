@@ -32,7 +32,7 @@ class CreateDeviceMixin(object):
             model='TP-Link TL-WDR4300 v1',
             os='LEDE Reboot 17.01-SNAPSHOT r3313-c2999ef',
         )
-        options.update(kwargs)
+        options |= kwargs
         d = Device(**options)
         d.full_clean()
         d.save()
@@ -53,7 +53,7 @@ class CreateConfigMixin(CreateDeviceMixin):
 
     def _create_config(self, **kwargs):
         options = dict(backend='netjsonconfig.OpenWrt', config={'general': {}})
-        options.update(kwargs)
+        options |= kwargs
         if 'device' not in kwargs:
             options['device'] = self._create_device(
                 organization=self._get_org(), name='test-device'
@@ -71,7 +71,7 @@ class CreateTemplateMixin(object):
             'backend': 'netjsonconfig.OpenWrt',
             'config': {'interfaces': [{'name': 'eth0', 'type': 'ethernet'}]},
         }
-        model_kwargs.update(kwargs)
+        model_kwargs |= kwargs
         t = Template(**model_kwargs)
         t.full_clean()
         t.save()
@@ -149,7 +149,7 @@ class TestWireguardVpnMixin:
             'name': 'test',
             'host': 'vpn1.test.com',
         }
-        vpn_options.update(kwargs)
+        vpn_options |= kwargs
         vpn = Vpn(**vpn_options)
         vpn.full_clean()
         vpn.save()
@@ -235,7 +235,7 @@ class CreateDeviceGroupMixin:
             'description': 'Group for all routers',
             'meta_data': {},
         }
-        options.update(kwargs)
+        options |= kwargs
         if 'organization' not in options:
             options['organization'] = self._get_org()
         device_group = DeviceGroup(**options)

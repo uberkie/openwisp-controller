@@ -22,9 +22,7 @@ class SshServer(Server):
         try:
             return super()._run(*args, **kwargs)
         except OSError as e:
-            if str(e) == '[Errno 9] Bad file descriptor':
-                pass
-            else:
+            if str(e) != '[Errno 9] Bad file descriptor':
                 raise e
 
 
@@ -70,7 +68,7 @@ class CreateConnectionsMixin(CreateConfigTemplateMixin, TestOrganizationMixin):
             connector=app_settings.CONNECTORS[0][0],
             params={'username': 'root', 'password': 'password', 'port': 22},
         )
-        opts.update(kwargs)
+        opts |= kwargs
         if 'organization' not in opts:
             opts['organization'] = self._get_org()
         c = Credentials(**opts)
@@ -87,7 +85,7 @@ class CreateConnectionsMixin(CreateConfigTemplateMixin, TestOrganizationMixin):
                 'port': port,
             },
         )
-        opts.update(kwargs)
+        opts |= kwargs
         return self._create_credentials(**opts)
 
     def _create_credentials_with_ed_key(self, username='root', port=22, **kwargs):
@@ -99,12 +97,12 @@ class CreateConnectionsMixin(CreateConfigTemplateMixin, TestOrganizationMixin):
                 'port': port,
             },
         )
-        opts.update(kwargs)
+        opts |= kwargs
         return self._create_credentials(**opts)
 
     def _create_device_connection(self, **kwargs):
         opts = dict(enabled=True, params={})
-        opts.update(kwargs)
+        opts |= kwargs
         if 'credentials' not in opts:
             cred_opts = {}
             if 'device' in opts:

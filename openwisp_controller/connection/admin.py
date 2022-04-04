@@ -159,9 +159,7 @@ class CommandWritableInline(admin.StackedInline):
         ]
 
     def schema_view(self, request):
-        result = {}
-        for key, value in COMMANDS.items():
-            result.update({key: value['schema']})
+        result = {key: value['schema'] for key, value in COMMANDS.items()}
         return JsonResponse(result)
 
 

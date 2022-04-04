@@ -63,7 +63,7 @@ class TestAdmin(TestAdminMixin, TestGeoMixin, BaseTestAdmin, TestCase):
         self._create_object_location(location=l1, floorplan=fl1, content_object=d1)
         self._create_object_location(location=l2, floorplan=fl2, content_object=d2)
         self._create_object_location(location=l3, floorplan=fl3, content_object=d3)
-        data = dict(
+        return dict(
             l1=l1,
             l2=l2,
             l3_inactive=l3,
@@ -75,7 +75,6 @@ class TestAdmin(TestAdminMixin, TestGeoMixin, BaseTestAdmin, TestCase):
             inactive=inactive,
             operator=operator,
         )
-        return data
 
     def test_location_queryset(self):
         self._create_admin()

@@ -8,7 +8,7 @@ Organization = load_model('openwisp_users', 'Organization')
 class TestGeoMixin(TestLociMixin):
     def _create_organization(self, **kwargs):
         options = dict(name='org1')
-        options.update(kwargs)
+        options |= kwargs
         options.setdefault('slug', slugify(options['name']))
         if not Organization.objects.filter(**kwargs).count():
             org = Organization(**options)

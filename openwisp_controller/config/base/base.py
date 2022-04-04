@@ -154,7 +154,7 @@ class BaseConfig(BaseModel):
         if hasattr(self, 'templates'):
             if template_instances is None:
                 template_instances = self.templates.all()
-            templates_list = list()
+            templates_list = []
             for t in template_instances:
                 templates_list.append(t.config)
                 context.update(t.get_context())

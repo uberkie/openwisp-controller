@@ -63,8 +63,7 @@ class SystemDefinedVariableMixin(object):
     def system_context(self, obj):
         system_context = obj.get_system_context()
         template = get_template('admin/config/system_context.html')
-        output = template.render({'system_context': system_context, 'new_line': '\n'})
-        return output
+        return template.render({'system_context': system_context, 'new_line': '\n'})
 
     system_context.short_description = _('System Defined Variables')
 
@@ -227,8 +226,7 @@ class BaseConfigAdmin(BaseAdmin):
             # return 400 for validation errors, otherwise 500
             status = 400 if e.__class__ is ValidationError else 500
             return HttpResponse(str(e), status=status)
-        template_ids = request.POST.get('templates')
-        if template_ids:
+        if template_ids := request.POST.get('templates'):
             template_model = config_model.get_template_model()
             try:
                 templates = template_model.objects.filter(
@@ -266,7 +264,7 @@ class BaseConfigAdmin(BaseAdmin):
             request,
             self.preview_template
             or [
-                'admin/config/%s/preview.html' % (opts.model_name),
+                f'admin/config/{opts.model_name}/preview.html',
                 'admin/config/preview.html',
             ],
             context,

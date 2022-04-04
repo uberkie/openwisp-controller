@@ -26,7 +26,7 @@ from .utils import CreateConfigTemplateMixin, TestVpnX509Mixin
 
 TEST_MACADDR = '00:11:22:33:44:55'
 TEST_ORG_SHARED_SECRET = 'functional_testing_secret'
-mac_plus_secret = '%s+%s' % (TEST_MACADDR, TEST_ORG_SHARED_SECRET)
+mac_plus_secret = f'{TEST_MACADDR}+{TEST_ORG_SHARED_SECRET}'
 TEST_CONSISTENT_KEY = md5(mac_plus_secret.encode()).hexdigest()
 TEST_MACADDR_NAME = TEST_MACADDR.replace(':', '-')
 
@@ -215,7 +215,7 @@ class TestController(
 
     def test_device_checksum_bad_uuid(self):
         d = self._create_device_config()
-        pk = '{}-wrong'.format(d.pk)
+        pk = f'{d.pk}-wrong'
         response = self.client.get(
             reverse('controller:device_checksum', args=[pk]), {'key': d.key}
         )
@@ -275,7 +275,7 @@ class TestController(
 
     def test_device_download_config_bad_uuid(self):
         d = self._create_device_config()
-        pk = '{}-wrong'.format(d.pk)
+        pk = f'{d.pk}-wrong'
         response = self.client.get(
             reverse('controller:device_download_config', args=[pk]), {'key': d.key}
         )
@@ -326,7 +326,7 @@ class TestController(
 
     def test_vpn_checksum_bad_uuid(self):
         v = self._create_vpn()
-        pk = '{}-wrong'.format(v.pk)
+        pk = f'{v.pk}-wrong'
         response = self.client.get(
             reverse('controller:vpn_checksum', args=[pk]), {'key': v.key}
         )
@@ -366,7 +366,7 @@ class TestController(
 
     def test_vpn_download_config_bad_uuid(self):
         v = self._create_vpn()
-        pk = '{}-wrong'.format(v.pk)
+        pk = f'{v.pk}-wrong'
         response = self.client.get(
             reverse('controller:vpn_download_config', args=[pk]), {'key': v.key}
         )
@@ -404,7 +404,7 @@ class TestController(
             'mac_address': TEST_MACADDR,
             'backend': 'netjsonconfig.OpenWrt',
         }
-        options.update(kwargs)
+        options |= kwargs
         org = self._get_org()
         response = self.client.post(self.register_url, options)
         lines = response.content.decode().split('\n')
@@ -663,7 +663,7 @@ class TestController(
 
     def test_device_report_status_bad_uuid(self):
         d = self._create_device_config()
-        pk = '{}-wrong'.format(d.pk)
+        pk = f'{d.pk}-wrong'
         response = self.client.post(
             reverse('controller:device_report_status', args=[pk]), {'key': d.key}
         )
@@ -747,7 +747,7 @@ class TestController(
 
     def test_device_update_info_bad_uuid(self):
         d = self._create_device_config()
-        pk = '{}-wrong'.format(d.pk)
+        pk = f'{d.pk}-wrong'
         params = {
             'key': d.key,
             'model': 'TP-Link TL-WDR4300 v2',

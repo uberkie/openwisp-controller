@@ -188,9 +188,7 @@ class TestDevice(
     def test_generate_consistent_key_mac_address(self):
         device = Device(name='test_generate_key', mac_address='00:11:22:33:44:55')
         self.assertIsNone(device.key)
-        string = '{}+{}'.format(device.mac_address, TEST_ORG_SHARED_SECRET).encode(
-            'utf-8'
-        )
+        string = f'{device.mac_address}+{TEST_ORG_SHARED_SECRET}'.encode('utf-8')
         expected = md5(string).hexdigest()
 
         key = device.generate_key(TEST_ORG_SHARED_SECRET)
@@ -206,7 +204,7 @@ class TestDevice(
             hardware_id='1234',
         )
         self.assertIsNone(d.key)
-        string = '{}+{}'.format(d.hardware_id, TEST_ORG_SHARED_SECRET).encode('utf-8')
+        string = f'{d.hardware_id}+{TEST_ORG_SHARED_SECRET}'.encode('utf-8')
         expected = md5(string).hexdigest()
         key = d.generate_key(TEST_ORG_SHARED_SECRET)
         self.assertEqual(key, expected)

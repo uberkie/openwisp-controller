@@ -14,6 +14,8 @@ from django.db import migrations, models
 import openwisp_users.mixins
 
 
+
+
 class Migration(migrations.Migration):
 
     initial = True
@@ -202,14 +204,19 @@ class Migration(migrations.Migration):
                 (
                     'geometry',
                     django.contrib.gis.db.models.fields.GeometryField(
-                        blank=True, null=True, srid=4326, verbose_name='geometry'
+                        blank=True,
+                        null=True,
+                        srid=4326,
+                        verbose_name='geometry',
                     ),
                 ),
                 (
                     'organization',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to=swapper.get_model_name('openwisp_users', 'Organization'),
+                        to=swapper.get_model_name(
+                            'openwisp_users', 'Organization'
+                        ),
                         verbose_name='organization',
                     ),
                 ),
@@ -254,6 +261,6 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AlterUniqueTogether(
-            name='floorplan', unique_together=set([('location', 'floor')])
+            name='floorplan', unique_together={('location', 'floor')}
         ),
     ]

@@ -232,10 +232,9 @@ HZAAAAgAhZz8ve4sK9Wbopq43Cu2kQDgX4NoA6W+FCmxCKf5AhYIzYQxIqyCazd7MrjCwS""",
         device = self._create_device(
             organization=self._get_org(), last_ip=last_ip, management_ip=management_ip
         )
-        dc = self._create_device_connection(
+        return self._create_device_connection(
             device=device, update_strategy=update_strategy
         )
-        return dc
 
     def test_address_list(self):
         dc = self._prepare_address_list_test()

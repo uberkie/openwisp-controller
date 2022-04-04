@@ -21,6 +21,8 @@ from .. import settings as app_settings
 from ..sortedm2m.fields import SortedManyToManyField
 
 
+
+
 class Migration(migrations.Migration):
 
     replaces = [('config', '0001_initial'), ('config', '0002_config_settings_uuid')]
@@ -51,7 +53,10 @@ class Migration(migrations.Migration):
                     models.CharField(
                         choices=[
                             ('netjsonconfig.OpenWrt', 'OpenWRT'),
-                            ('netjsonconfig.OpenWisp', 'OpenWISP Firmware 1.x'),
+                            (
+                                'netjsonconfig.OpenWisp',
+                                'OpenWISP Firmware 1.x',
+                            ),
                         ],
                         help_text=(
                             'Select <a href="http://netjsonconfig.openwisp.org'
@@ -69,7 +74,9 @@ class Migration(migrations.Migration):
                         default=dict,
                         dump_kwargs={'ensure_ascii': False, 'indent': 4},
                         help_text='configuration in NetJSON DeviceConfiguration format',
-                        load_kwargs={'object_pairs_hook': collections.OrderedDict},
+                        load_kwargs={
+                            'object_pairs_hook': collections.OrderedDict
+                        },
                         verbose_name='configuration',
                     ),
                 ),
@@ -135,7 +142,8 @@ class Migration(migrations.Migration):
                         validators=[
                             django.core.validators.RegexValidator(
                                 re.compile(
-                                    '^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})', 32
+                                    '^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})',
+                                    32,
                                 ),
                                 code='invalid',
                                 message='Must be a valid mac address.',
@@ -247,7 +255,10 @@ class Migration(migrations.Migration):
                     models.CharField(
                         choices=[
                             ('netjsonconfig.OpenWrt', 'OpenWRT'),
-                            ('netjsonconfig.OpenWisp', 'OpenWISP Firmware 1.x'),
+                            (
+                                'netjsonconfig.OpenWisp',
+                                'OpenWISP Firmware 1.x',
+                            ),
                         ],
                         help_text=(
                             'Select <a href="http://netjsonconfig.openwisp.org'
@@ -264,7 +275,9 @@ class Migration(migrations.Migration):
                         default=dict,
                         dump_kwargs={'ensure_ascii': False, 'indent': 4},
                         help_text='configuration in NetJSON DeviceConfiguration format',
-                        load_kwargs={'object_pairs_hook': collections.OrderedDict},
+                        load_kwargs={
+                            'object_pairs_hook': collections.OrderedDict
+                        },
                         verbose_name='configuration',
                     ),
                 ),
@@ -287,7 +300,10 @@ class Migration(migrations.Migration):
                 (
                     'type',
                     models.CharField(
-                        choices=[('generic', 'Generic'), ('vpn', 'VPN-client')],
+                        choices=[
+                            ('generic', 'Generic'),
+                            ('vpn', 'VPN-client'),
+                        ],
                         db_index=True,
                         default='generic',
                         help_text=(
@@ -360,7 +376,9 @@ class Migration(migrations.Migration):
                         default=dict,
                         dump_kwargs={'ensure_ascii': False, 'indent': 4},
                         help_text='configuration in NetJSON DeviceConfiguration format',
-                        load_kwargs={'object_pairs_hook': collections.OrderedDict},
+                        load_kwargs={
+                            'object_pairs_hook': collections.OrderedDict
+                        },
                         verbose_name='configuration',
                     ),
                 ),
@@ -383,7 +401,8 @@ class Migration(migrations.Migration):
                 (
                     'host',
                     models.CharField(
-                        help_text='VPN server hostname or ip address', max_length=64
+                        help_text='VPN server hostname or ip address',
+                        max_length=64,
                     ),
                 ),
                 (
@@ -458,13 +477,15 @@ class Migration(migrations.Migration):
                 (
                     'config',
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to='config.Config'
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='config.Config',
                     ),
                 ),
                 (
                     'vpn',
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to='config.Vpn'
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='config.Vpn',
                     ),
                 ),
             ],
@@ -507,6 +528,6 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AlterUniqueTogether(
-            name='vpnclient', unique_together=set([('config', 'vpn')])
+            name='vpnclient', unique_together={('config', 'vpn')}
         ),
     ]

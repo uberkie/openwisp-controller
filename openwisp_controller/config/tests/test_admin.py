@@ -234,9 +234,7 @@ class TestAdmin(
             t4 = self._create_template(
                 name='vpn-template1org', organization=org1, type='vpn', vpn=v1
             )
-            data.update(
-                dict(vpn1=v1, vpn2=v2, vpn_shared=v3, vpn_inactive=v4, t1_vpn=t4)
-            )
+            data |= dict(vpn1=v1, vpn2=v2, vpn_shared=v3, vpn_inactive=v4, t1_vpn=t4)
         return data
 
     def test_device_queryset(self):
@@ -440,7 +438,7 @@ class TestAdmin(
         post_data = self._get_clone_template_post_data(t)
         self.client.force_login(self._get_admin())
         response = self.client.post(path, post_data, follow=True)
-        self.assertContains(response, '{} (Clone)'.format(t.name))
+        self.assertContains(response, f'{t.name} (Clone)')
 
     def test_clone_templates_superuser_multi_orgs(self):
         path = reverse(f'admin:{self.app_label}_template_changelist')
@@ -458,7 +456,7 @@ class TestAdmin(
         post_data = self._get_clone_template_post_data(t)
         self.client.force_login(test_user)
         response = self.client.post(path, post_data, follow=True)
-        self.assertContains(response, '{} (Clone)'.format(t.name))
+        self.assertContains(response, f'{t.name} (Clone)')
 
     def test_clone_templates_operator_multi_orgs(self):
         path = reverse(f'admin:{self.app_label}_template_changelist')
@@ -1090,7 +1088,7 @@ class TestAdmin(
         device = self._create_device()
         url = reverse(f'admin:{self.app_label}_device_context', args=[device.pk])
         response = self.client.get(url)
-        expected_url = '{}?next={}'.format(reverse('admin:login'), url)
+        expected_url = f"{reverse('admin:login')}?next={url}"
         self.assertRedirects(response, expected_url)
 
     @patch('sys.stdout', devnull)
@@ -1118,11 +1116,11 @@ class TestAdmin(
             'csrfmiddlewaretoken': 'test',
         }
         response = self.client.post(path, data, follow=True)
-        self.assertContains(response, '{} (Clone)'.format(t.name))
+        self.assertContains(response, f'{t.name} (Clone)')
         response = self.client.post(path, data, follow=True)
-        self.assertContains(response, '{} (Clone 2)'.format(t.name))
+        self.assertContains(response, f'{t.name} (Clone 2)')
         response = self.client.post(path, data, follow=True)
-        self.assertContains(response, '{} (Clone 3)'.format(t.name))
+        self.assertContains(response, f'{t.name} (Clone 3)')
         path = reverse('admin:index')
         response = self.client.get(path)
         self.assertIn('test-template (Clone 3)', str(response.content))

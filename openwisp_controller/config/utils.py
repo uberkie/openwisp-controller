@@ -113,7 +113,7 @@ def get_controller_urls(views_module):
     """
     used by third party apps to reduce boilerplate
     """
-    urls = [
+    return [
         re_path(
             'controller/device/checksum/(?P<pk>[^/]+)/$',
             views_module.device_checksum,
@@ -176,7 +176,6 @@ def get_controller_urls(views_module):
             name='register_legacy',
         ),
     ]
-    return urls
 
 
 def get_default_templates_queryset(

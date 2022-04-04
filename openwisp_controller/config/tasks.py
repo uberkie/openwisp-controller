@@ -94,8 +94,9 @@ def trigger_vpn_server_endpoint(endpoint, auth_token, vpn_id):
     response = requests.post(
         endpoint,
         params={'key': auth_token},
-        verify=False if getattr(settings, 'DEBUG') else True,
+        verify=not getattr(settings, 'DEBUG'),
     )
+
     if response.status_code == 200:
         logger.info(f'Triggered update webhook of VPN Server UUID: {vpn_id}')
     else:

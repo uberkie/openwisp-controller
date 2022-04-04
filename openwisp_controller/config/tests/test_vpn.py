@@ -259,7 +259,7 @@ class TestVpn(BaseTestVpn, TestCase):
             'key': v.cert.private_key,
             'dh': v.dh,
         }
-        expected.update(app_settings.CONTEXT)
+        expected |= app_settings.CONTEXT
         self.assertEqual(v.get_context(), expected)
         self.assertNotEqual(v.get_context(), app_settings.CONTEXT)
 
